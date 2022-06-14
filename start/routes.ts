@@ -29,6 +29,7 @@ Route.get('/', async () => {
 Route.resource('products', 'ProductsController')
 
 Route.post('login', async ({ auth, request, response }) => {
+  await auth.use('api').authenticate()
   if (auth.isLoggedIn) {
     return response.unauthorized({ err: "Already logged in" })
   }
@@ -42,13 +43,14 @@ Route.post('login', async ({ auth, request, response }) => {
 
   try {
     const token = await auth.use('api').attempt(email, password)
-    return token
+    return { token: token.toJSON() }
   } catch {
     return response.badRequest({ err: 'Invalid credentials' })
   }
 })
 
 Route.post('signup', async ({ auth, request, response }) => {
+  await auth.use('api').authenticate()
   if (auth.isLoggedIn) {
     return response.unauthorized({ err: "Already logged in" })
   }
@@ -64,5 +66,14 @@ Route.post('signup', async ({ auth, request, response }) => {
   const newUser = await User.create({ name, email, password })
   const token = await auth.use('api').generate(newUser)
 
-  return { token, created: newUser }
+  return { token: token.toJSON(), created: newUser }
+})
+
+Route.get('me', async ({ auth, response }) => {
+  await auth.use('api').authenticate()
+  if (!auth.isLoggedIn) {
+    return response.unauthorized({ err: "Not logged in" })
+  }
+
+  return auth.user
 })
