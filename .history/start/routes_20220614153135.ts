@@ -24,7 +24,7 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.resource('products', 'ProductsController')
+Route.get('store', async () => {})
 
 Route.post('login', async ({ auth, request, response }) => {
   const email = request.input('email')
@@ -34,6 +34,6 @@ Route.post('login', async ({ auth, request, response }) => {
     const token = await auth.use('api').attempt(email, password)
     return token
   } catch {
-    return response.badRequest({ err: 'Invalid credentials' })
+    return response.badRequest({err: 'Invalid credentials'})
   }
 })

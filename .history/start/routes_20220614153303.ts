@@ -24,7 +24,7 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.resource('products', 'ProductsController')
+Route.resource('product', 'ProductsController')
 
 Route.post('login', async ({ auth, request, response }) => {
   const email = request.input('email')
